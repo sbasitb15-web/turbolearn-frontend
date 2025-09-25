@@ -1,69 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Turbolearn AI</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Turbolearn AI — Turn Lectures, PDFs & Videos into Notes, Flashcards & Quizzes</title>
+
+  <!-- SEO meta -->
+  <meta name="description" content="Turbolearn AI converts lectures, meetings, YouTube videos, audio and PDFs into concise summaries, study flashcards and quizzes — fast and easy. Improve your learning with AI-generated notes." />
+  <meta name="keywords" content="AI study notes, flashcards, AI summary, PDF to notes, YouTube to notes, quiz generator, study helper" />
+  <meta name="author" content="Turbolearn AI" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Turbolearn AI — Transform Any Content Into Study Materials" />
+  <meta property="og:description" content="Turn lectures, YouTube videos, audio & PDFs into summaries, flashcards and quizzes with Turbolearn AI." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://turbolearnai.in/" />
+  <meta property="og:image" content="https://turbolearn.ai/logo.png" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Turbolearn AI" />
+  <meta name="twitter:description" content="Turn lectures, YouTube videos, audio & PDFs into summaries, flashcards and quizzes." />
+  <meta name="twitter:image" content="https://turbolearn.ai/logo.png" />
+
+  <link rel="icon" href="https://turbolearn.ai/logo.png" />
+
+  <!-- Minimal styles for clean look -->
   <style>
-    body { font-family: Arial, sans-serif; background:#f4f6f8; padding:20px; }
-    h1 { text-align:center; color:#2c3e50; }
-    textarea { width:100%; height:120px; margin-top:10px; padding:10px; }
-    button { margin:10px 5px; padding:10px 15px; border:none; border-radius:5px; cursor:pointer; background:#3498db; color:white; }
-    button:hover { background:#2980b9; }
-    .output { background:white; padding:15px; border-radius:8px; margin-top:15px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+    :root{
+      --brand:#0f766e; --muted:#64748b; --card:#fff; --bg:#f8fafc;
+      --btn:#1e90ff; --danger:#ef4444;
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);color:#0f172a}
+    .container{max-width:980px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,#0ea5a4,#7c3aed);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px}
+    h1{margin:0;font-size:28px;color:var(--brand)}
+    p.lead{margin:8px 0 18px;color:var(--muted)}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 26px rgba(2,6,23,0.06)}
+    textarea{width:100%;min-height:140px;border-radius:10px;padding:12px;border:1px solid #e6eef2;resize:vertical;font-size:15px}
+    .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    button.btn{background:var(--btn);color:#fff;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:600;box-shadow:0 6px 18px rgba(15,118,110,0.08)}
+    button.btn.secondary{background:#7c3aed}
+    button.small{padding:8px 12px;font-size:14px}
+    .muted{color:var(--muted);font-size:14px}
+    .results{margin-top:18px}
+    .result-card{background:#fff;border-radius:10px;padding:16px;margin-top:12px;border:1px solid #eef2f6}
+    .result-card h3{margin:0 0 8px;color:#0f766e}
+    .flex-space{display:flex;justify-content:space-between;align-items:center}
+    .about{margin-top:20px;padding:18px;background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.03)}
+    footer{margin-top:26px;padding:18px;text-align:center;color:var(--muted)}
+    /* responsive */
+    @media (max-width:640px){
+      header{flex-direction:column;align-items:flex-start}
+      .logo{width:48px;height:48px}
+    }
   </style>
+
+  <!-- jsPDF for download feature -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 </head>
 <body>
-  <h1>🚀 Turbolearn AI</h1>
+  <div class="container">
+    <header>
+      <div class="logo">T</div>
+      <div>
+        <h1>Turbolearn AI</h1>
+        <p class="lead">Turn lectures, PDFs, audio and YouTube into summaries, flashcards and quizzes — fast and free.</p>
+      </div>
+    </header>
 
-  <textarea id="inputText" placeholder="Enter text here..."></textarea>
-  <br>
-  <button onclick="generateSummary()">📝 Generate Summary</button>
-  <button onclick="generateFlashcards()">📚 Generate Flashcards</button>
-  <button onclick="generateQuiz()">❓ Generate Quiz</button>
+    <!-- Input card -->
+    <div class="card" style="margin-top:18px">
+      <label style="font-weight:700">Paste text (or brief notes / YouTube URL below)</label>
+      <textarea id="textInput" placeholder="Paste lecture text, article, or notes here..."></textarea>
 
-  <div class="output" id="output"></div>
+      <div style="margin-top:10px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <input id="ytUrl" type="text" placeholder="YouTube URL (optional)" style="flex:1;padding:10px;border-radius:8px;border:1px solid #e6eef2" />
+        <input id="filePdf" type="file" accept="application/pdf" style="display:inline-block" />
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button class="btn" onclick="handleGenerate('summary')">📝 Generate Summary</button>
+        <button class="btn secondary" onclick="handleGenerate('flashcards')">📚 Generate Flashcards</button>
+        <button class="btn" style="background:var(--danger)" onclick="handleGenerate('quiz')">❓ Generate Quiz</button>
+        <button class="btn small" style="background:#111827" onclick="copyOutput()">📋 Copy</button>
+        <button class="btn small" style="background:#059669" onclick="downloadPDF()">⬇️ Download PDF</button>
+      </div>
+
+      <div class="muted" style="margin-top:8px">Tip: For best results paste a focused section (200–2000 words). Use the YouTube field only if your backend supports it.</div>
+    </div>
+
+    <!-- Results -->
+    <div class="results">
+      <div class="flex-space">
+        <h2 style="margin:0">Results</h2>
+        <div id="langLabel" class="muted"></div>
+      </div>
+
+      <div id="outputArea" class="result-card" style="min-height:80px">Results will appear here.</div>
+    </div>
+
+    <!-- About -->
+    <div class="about">
+      <h3>About Turbolearn AI</h3>
+      <p><strong>Mission:</strong> We make studying faster: convert lectures, meetings, PDFs and videos into summaries, flashcards and quizzes so learners can revise faster and smarter.</p>
+      <p><strong>How it works:</strong> Paste your content, click Generate — our backend uses a language model to create study materials tailored to the text.</p>
+      <p><strong>Privacy:</strong> We do not store your text permanently. Sensitive data should not be submitted.</p>
+    </div>
+
+    <footer>
+      Copyright © <span id="year"></span> Turbolearn AI — All rights reserved.
+    </footer>
+  </div>
 
   <script>
-    const BACKEND_URL = "https://turbolearn-backend-f6lh.onrender.com"; // ✅ apna backend URL daalo
+    // ============ CONFIG ============
+    const BACKEND_URL = "https://turbolearn-backend-f6lh.onrender.com"; // <-- change if needed
 
-    async function generateSummary() {
-      const inputText = document.getElementById("inputText").value;
-      const res = await fetch(`${BACKEND_URL}/generate-summary`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: inputText }), // ✅ same key
-      });
-      const data = await res.json();
-      document.getElementById("output").innerHTML = `<h3>Summary:</h3><p>${data.summary}</p>`;
+    // Helper: detect language (quick)
+    function detectLanguage(text){
+      if(!text) return "";
+      if(/[\u0600-\u06FF]/.test(text)) return "Arabic/Urdu";
+      if(/[\u0900-\u097F]/.test(text)) return "Hindi";
+      if(/[\u4E00-\u9FFF]/.test(text)) return "Chinese";
+      return "English";
     }
 
-    async function generateFlashcards() {
-      const inputText = document.getElementById("inputText").value;
-      const res = await fetch(`${BACKEND_URL}/generate-flashcards`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: inputText }), // ✅ same key
-      });
-      const data = await res.json();
-      document.getElementById("output").innerHTML =
-        `<h3>Flashcards:</h3>` +
-        data.flashcards.map(f => `<p><b>${f.question || f}</b> <br> ${f.answer || ""}</p>`).join("");
+    // show year
+    document.getElementById('year').innerText = new Date().getFullYear();
+
+    // State
+    let lastOutputText = "";
+
+    // Main generate handler
+    async function handleGenerate(kind){
+      const textArea = document.getElementById('textInput');
+      const ytUrl = document.getElementById('ytUrl').value.trim();
+      const pdfFile = document.getElementById('filePdf').files[0];
+
+      // If YouTube or PDF integration exists, call respective endpoint first (optional)
+      let text = textArea.value.trim();
+
+      try {
+        // If file provided but server doesn't support /upload, skip (left for future)
+        if(pdfFile){
+          // If your backend supports /upload endpoint use it; otherwise remove this block.
+          const fd = new FormData();
+          fd.append('file', pdfFile);
+          const r = await fetch(BACKEND_URL + '/upload', { method:'POST', body:fd });
+          if(r.ok){
+            const j = await r.json();
+            text = j.text || text;
+          }
+        } else if(ytUrl){
+          // If your backend supports /youtube endpoint
+          const r = await fetch(BACKEND_URL + '/youtube', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ url: ytUrl }) });
+          if(r.ok){
+            const j = await r.json();
+            text = j.text || text;
+          }
+        }
+
+        if(!text) return alert("Please provide some text, paste or upload a PDF / YouTube URL.");
+
+        document.getElementById('langLabel').innerText = detectLanguage(text);
+
+        // choose endpoint
+        const endpoint = kind === 'summary' ? '/generate-summary' : (kind === 'flashcards' ? '/generate-flashcards' : '/generate-quiz');
+        const res = await fetch(BACKEND_URL + endpoint, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ text })
+        });
+
+        if(!res.ok){
+          const txt = await res.text();
+          throw new Error('Server error: ' + (txt || res.status));
+        }
+
+        const data = await res.json();
+        renderResult(kind, data);
+      } catch(err){
+        console.error(err);
+        alert('Error: ' + (err.message || err));
+      }
     }
 
-    async function generateQuiz() {
-      const inputText = document.getElementById("inputText").value;
-      const res = await fetch(`${BACKEND_URL}/generate-quiz`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: inputText }), // ✅ same key
-      });
-      const data = await res.json();
-      document.getElementById("output").innerHTML =
-        `<h3>Quiz:</h3>` +
-        data.quiz.map(q =>
-          `<p><b>${q.question || q}</b><br>Options: ${(q.options || []).join(", ")}<br>Answer: ${q.answer || ""}</p>`
-        ).join("");
+    // Render results nicely
+    function renderResult(kind, data){
+      const out = document.getElementById('outputArea');
+      let html = '';
+
+      if(kind === 'summary'){
+        const s = data.summary || data.summaryText || JSON.stringify(data);
+        html += `<h3>Summary:</h3><p style="white-space:pre-wrap">${escapeHtml(s)}</p>`;
+        lastOutputText = s;
+      } else if(kind === 'flashcards'){
+        const cards = Array.isArray(data.flashcards) ? data.flashcards : (Array.isArray(data) ? data : []);
+        if(cards.length){
+          html += `<h3>Flashcards:</h3>`;
+          for(const c of cards){
+            if(typeof c === 'string'){
+              html += `<div style="margin-bottom:10px;padding:10px;border-radius:8px;background:#fbfdff"><p>${escapeHtml(c)}</p></div>`;
+            } else {
+              html += `<div style="margin-bottom:10px;padding:12px;border-radius:8px;background:#fbfdff"><b>${escapeHtml(c.question||c.front||'Question')}</b><br>${escapeHtml(c.answer||c.back||'Answer')}</div>`;
+            }
+          }
+          lastOutputText = cards.map(c => typeof c === 'string' ? c : `${c.question} - ${c.answer}`).join('\n\n');
+        } else {
+          // sometimes API returns text instead of array
+          const txt = data.flashcards || data.text || JSON.stringify(data);
+          html += `<h3>Flashcards:</h3><pre style="white-space:pre-wrap">${escapeHtml(txt)}</pre>`;
+          lastOutputText = String(txt);
+        }
+      } else if(kind === 'quiz'){
+        const quiz = Array.isArray(data.quiz) ? data.quiz : [];
+        if(quiz.length){
+          html += `<h3>Quiz:</h3>`;
+          quiz.forEach((q,i)=>{
+            html += `<div style="margin-bottom:12px;padding:12px;border-radius:8px;background:#fbfdff"><b>Q${i+1}: ${escapeHtml(q.question||q.q||q)}</b><br>Options: ${escapeHtml((q.options||[]).join(', '))}<br><b>Answer:</b> ${escapeHtml(q.answer||q.correct||'')}</div>`;
+          });
+          lastOutputText = quiz.map(q=>`${q.question}\nOptions: ${q.options?.join(', ')}\nAnswer: ${q.answer}`).join('\n\n');
+        } else {
+          const txt = data.quiz || data.text || JSON.stringify(data);
+          html += `<h3>Quiz:</h3><pre style="white-space:pre-wrap">${escapeHtml(txt)}</pre>`;
+          lastOutputText = String(txt);
+        }
+      }
+
+      out.innerHTML = html || '<div class="muted">No results returned</div>';
+    }
+
+    // copy button
+    function copyOutput(){
+      if(!lastOutputText) return alert('Nothing to copy');
+      navigator.clipboard.writeText(lastOutputText).then(()=>alert('Copied ✅'));
+    }
+
+    // download as PDF
+    function downloadPDF(){
+      if(!lastOutputText) return alert('No results to download');
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const lines = doc.splitTextToSize(lastOutputText, 160);
+      doc.text(lines, 10, 10);
+      doc.save('Turbolearn-Notes.pdf');
+    }
+
+    // escape html
+    function escapeHtml(str){
+      if(!str) return '';
+      return String(str).replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
     }
   </script>
 </body>
