@@ -3,67 +3,116 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Turbolearn AI</title>
+  <title>Turbolearn AI | Smart Study Helper</title>
+
+  <!-- ✅ SEO -->
+  <meta name="description" content="Turbolearn AI helps students generate smart summaries, flashcards, and quizzes instantly using AI. Save time and study smarter!" />
+  <meta name="keywords" content="AI learning, study helper, flashcards generator, quiz generator, text summarizer, Gemini AI" />
+  <meta name="author" content="Turbolearn AI" />
+  <link rel="canonical" href="https://turbolearn-frontend.onrender.com/" />
+
+  <!-- ✅ Open Graph (Social Media) -->
+  <meta property="og:title" content="Turbolearn AI | Smart Study Helper" />
+  <meta property="og:description" content="Generate AI-powered summaries, flashcards, and quizzes instantly. Smarter learning starts here!" />
+  <meta property="og:url" content="https://turbolearn-frontend.onrender.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://turbolearn-frontend.onrender.com/preview.png" />
+
+  <!-- ✅ Styling -->
   <style>
-    body { font-family: Arial, sans-serif; background:#f4f6f8; padding:20px; }
-    h1 { text-align:center; color:#2c3e50; }
-    textarea { width:100%; height:120px; margin-top:10px; padding:10px; }
-    button { margin:10px 5px; padding:10px 15px; border:none; border-radius:5px; cursor:pointer; background:#3498db; color:white; }
-    button:hover { background:#2980b9; }
-    .output { background:white; padding:15px; border-radius:8px; margin-top:15px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6f9;
+      color: #333;
+      text-align: center;
+    }
+    header {
+      background: #4CAF50;
+      color: white;
+      padding: 1rem;
+    }
+    main {
+      margin: 2rem auto;
+      max-width: 600px;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    }
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 10px;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    #output {
+      margin-top: 1.5rem;
+      text-align: left;
+      white-space: pre-wrap;
+      padding: 1rem;
+      border-radius: 8px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+    }
   </style>
 </head>
 <body>
-  <h1>🚀 Turbolearn AI</h1>
+  <header>
+    <h1>🚀 Turbolearn AI</h1>
+    <p>Smarter Summaries, Flashcards & Quizzes with AI</p>
+  </header>
 
-  <textarea id="inputText" placeholder="Enter text here..."></textarea>
-  <br>
-  <button onclick="generateSummary()">📝 Generate Summary</button>
-  <button onclick="generateFlashcards()">📚 Generate Flashcards</button>
-  <button onclick="generateQuiz()">❓ Generate Quiz</button>
+  <main>
+    <h2>Generate Smart Summary</h2>
+    <textarea id="userInput" placeholder="Paste your text here..."></textarea>
+    <br />
+    <button onclick="generateSummary()">Generate Summary</button>
 
-  <div class="output" id="output"></div>
+    <div id="output"></div>
+  </main>
 
+  <!-- ✅ Script to connect with backend -->
   <script>
-    const BACKEND_URL = "https://turbolearn-backend-f6lh.onrender.com"; // ✅ backend url
-
     async function generateSummary() {
-      const inputText = document.getElementById("inputText").value;
-      const res = await fetch(`${BACKEND_URL}/generate-summary`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: inputText }) // ✅ same key
-      });
-      const data = await res.json();
-      document.getElementById("output").innerHTML = `<h3>Summary:</h3><p>${data.summary}</p>`;
-    }
+      const text = document.getElementById("userInput").value.trim();
+      const outputDiv = document.getElementById("output");
 
-    async function generateFlashcards() {
-      const inputText = document.getElementById("inputText").value;
-      const res = await fetch(`${BACKEND_URL}/generate-flashcards`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: inputText }) // ✅ same key
-      });
-      const data = await res.json();
-      document.getElementById("output").innerHTML =
-        `<h3>Flashcards:</h3>` +
-        data.flashcards.map(f => `<p><b>${f.question}</b><br>${f.answer}</p>`).join("");
-    }
+      if (!text) {
+        outputDiv.innerHTML = "<p style='color:red'>⚠️ Please enter some text.</p>";
+        return;
+      }
 
-    async function generateQuiz() {
-      const inputText = document.getElementById("inputText").value;
-      const res = await fetch(`${BACKEND_URL}/generate-quiz`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: inputText }) // ✅ same key
-      });
-      const data = await res.json();
-      document.getElementById("output").innerHTML =
-        `<h3>Quiz:</h3>` +
-        data.quiz.map(q =>
-          `<p><b>${q.question}</b><br>Options: ${q.options.join(", ")}<br>Answer: ${q.answer}</p>`
-        ).join("");
+      outputDiv.innerHTML = "<p>⏳ Generating summary...</p>";
+
+      try {
+        const response = await fetch("https://turbolearn-backend.onrender.com/generate-summary", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+
+        const data = await response.json();
+        outputDiv.innerHTML = `<h3>📌 Summary:</h3><p>${data.summary}</p>`;
+      } catch (error) {
+        console.error(error);
+        outputDiv.innerHTML = "<p style='color:red'>❌ Error: Failed to fetch summary.</p>";
+      }
     }
   </script>
 </body>
