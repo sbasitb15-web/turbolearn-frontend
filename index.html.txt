@@ -3,91 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TurboLearn AI - Smart Study Assistant</title>
+  <title>Turbolearn AI | Smart Study Helper</title>
 
-  <!-- SEO -->
-  <meta name="description" content="TurboLearn AI helps students and professionals by generating summaries, flashcards, and quizzes instantly using AI. Learn smarter and faster with TurboLearn.">
-  <meta name="keywords" content="AI learning, study assistant, flashcards generator, quiz generator, AI summaries, TurboLearn">
-  <meta name="author" content="TurboLearn AI">
+  <!-- ✅ SEO -->
+  <meta name="description" content="Turbolearn AI helps students generate smart summaries, flashcards, and quizzes instantly using AI. Save time and study smarter!" />
+  <meta name="keywords" content="AI learning, study helper, flashcards generator, quiz generator, text summarizer, Gemini AI" />
+  <meta name="author" content="Turbolearn AI" />
+  <link rel="canonical" href="https://turbolearn-frontend.onrender.com/" />
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f9fafb;
-      color: #333;
-    }
-    h1 {
-      text-align: center;
-      color: #2563eb;
-    }
-    textarea {
-      width: 100%;
-      height: 120px;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    button {
-      margin: 5px;
-      padding: 10px 15px;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #1e40af;
-    }
-    .output {
-      background: #fff;
-      border: 1px solid #ddd;
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 15px;
-    }
-    .flashcard, .quiz-item {
-      margin: 10px 0;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      background: #f3f4f6;
-    }
-  </style>
-</head>
-<body>
-  <h1>🚀 TurboLearn AI</h1>
-  <textarea id="userText" placeholder="Enter or paste text here..."></textarea>
-  <br />
-  <button onclick="generateSummary()">Generate Summary</button>
-  <button onclick="generateFlashcards()">Generate Flashcards</button>
-  <button onclick="generateQuiz()">Generate Quiz</button>
-
-  <div class="output">
-    <h3>Summary:</h3>
-    <p id="summary"></p>
-  </div>
-
-  <div class="output">
-    <h3>Flashcards:</h3>
-    <div id="flashcards"></div>
-  </div>
-
-  <div class="output">
-    <h3>Quiz:</h3>
-    <div id="quiz"></div>
-  </div>
-
-  <script>
-    const API_BASE = "https://turbolearn-backend-f6lh.onrender.com"; // ✅ live backend URL
-
-    async function generateSummary() {
-      const text = document.getElementById("userText").value;
-      const res = await fetch(`${API_BASE}/generate-summary`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text })
-      });
-      const data = await res.json
+  <!-- ✅ Open Graph for Social Media -->
+  <meta property="og:title" content="Turbolearn AI | Smart Study Hel
