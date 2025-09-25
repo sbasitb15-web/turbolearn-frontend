@@ -1,97 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Turbolean AI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Turbolearn AI</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
-    h1 { color: #333; }
-    textarea { width: 100%; height: 150px; margin-bottom: 10px; padding: 10px; font-size: 14px; }
-    button { margin: 5px; padding: 10px 20px; cursor: pointer; border: none; border-radius: 5px; background-color: #007bff; color: white; font-size: 14px; }
-    button:hover { background-color: #0056b3; }
-    .output { margin-top: 20px; padding: 15px; border: 1px solid #ccc; background: white; border-radius: 5px; }
-    ul { padding-left: 20px; }
+    body { font-family: Arial, sans-serif; background:#f4f6f8; padding:20px; }
+    h1 { text-align:center; color:#2c3e50; }
+    textarea { width:100%; height:120px; margin-top:10px; padding:10px; }
+    button { margin:10px 5px; padding:10px 15px; border:none; border-radius:5px; cursor:pointer; background:#3498db; color:white; }
+    button:hover { background:#2980b9; }
+    .output { background:white; padding:15px; border-radius:8px; margin-top:15px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
   </style>
 </head>
 <body>
-  <h1>🚀 Turbolean AI</h1>
-  
+  <h1>🚀 Turbolearn AI</h1>
+
   <textarea id="inputText" placeholder="Enter text here..."></textarea>
   <br>
-  <button onclick="generateSummary()">Generate Summary</button>
-  <button onclick="generateFlashcards()">Generate Flashcards</button>
-  <button onclick="generateQuiz()">Generate Quiz</button>
+  <button onclick="generateSummary()">📝 Generate Summary</button>
+  <button onclick="generateFlashcards()">📚 Generate Flashcards</button>
+  <button onclick="generateQuiz()">❓ Generate Quiz</button>
 
-  <div class="output">
-    <h3>Summary:</h3>
-    <p id="summary">---</p>
-  </div>
-
-  <div class="output">
-    <h3>Flashcards:</h3>
-    <ul id="flashcards"></ul>
-  </div>
-
-  <div class="output">
-    <h3>Quiz:</h3>
-    <ul id="quiz"></ul>
-  </div>
+  <div class="output" id="output"></div>
 
   <script>
-    const BACKEND_URL = "https://turbolearn-backend-f6lh.onrender.com";
+    const BACKEND_URL = "https://turbolearn-backend-f6lh.onrender.com"; // ✅ backend url
 
     async function generateSummary() {
       const inputText = document.getElementById("inputText").value;
-      const response = await fetch(`${BACKEND_URL}/summarize`, {
+      const res = await fetch(`${BACKEND_URL}/generate-summary`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: inputText })
+        body: JSON.stringify({ text: inputText }) // ✅ same key
       });
-      const data = await response.json();
-      document.getElementById("summary").innerText = data.summary || "No summary generated.";
+      const data = await res.json();
+      document.getElementById("output").innerHTML = `<h3>Summary:</h3><p>${data.summary}</p>`;
     }
 
     async function generateFlashcards() {
       const inputText = document.getElementById("inputText").value;
-      const response = await fetch(`${BACKEND_URL}/flashcards`, {
+      const res = await fetch(`${BACKEND_URL}/generate-flashcards`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: inputText })
+        body: JSON.stringify({ text: inputText }) // ✅ same key
       });
-      const data = await response.json();
-      const list = document.getElementById("flashcards");
-      list.innerHTML = "";
-      if (data.flashcards && data.flashcards.length > 0) {
-        data.flashcards.forEach(card => {
-          const li = document.createElement("li");
-          li.innerText = `${card.question} → ${card.answer}`;
-          list.appendChild(li);
-        });
-      } else {
-        list.innerHTML = "<li>No flashcards generated.</li>";
-      }
+      const data = await res.json();
+      document.getElementById("output").innerHTML =
+        `<h3>Flashcards:</h3>` +
+        data.flashcards.map(f => `<p><b>${f.question}</b><br>${f.answer}</p>`).join("");
     }
 
     async function generateQuiz() {
       const inputText = document.getElementById("inputText").value;
-      const response = await fetch(`${BACKEND_URL}/quiz`, {
+      const res = await fetch(`${BACKEND_URL}/generate-quiz`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: inputText })
+        body: JSON.stringify({ text: inputText }) // ✅ same key
       });
-      const data = await response.json();
-      const list = document.getElementById("quiz");
-      list.innerHTML = "";
-      if (data.quiz && data.quiz.length > 0) {
-        data.quiz.forEach(q => {
-          const li = document.createElement("li");
-          li.innerText = `${q.question} (Answer: ${q.answer})`;
-          list.appendChild(li);
-        });
-      } else {
-        list.innerHTML = "<li>No quiz generated.</li>";
-      }
+      const data = await res.json();
+      document.getElementById("output").innerHTML =
+        `<h3>Quiz:</h3>` +
+        data.quiz.map(q =>
+          `<p><b>${q.question}</b><br>Options: ${q.options.join(", ")}<br>Answer: ${q.answer}</p>`
+        ).join("");
     }
   </script>
 </body>
